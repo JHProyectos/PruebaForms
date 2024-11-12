@@ -1,4 +1,4 @@
-﻿using PruebaForms.Lógica;
+using PruebaForms.Lógica;
 using PruebaForms.Entidades;
 using System;
 using System.Windows.Forms;
@@ -8,11 +8,13 @@ namespace PruebaForms.Interfaz
     public partial class FormularioNuevoCliente : Form
     {
         private LogicaClientes logicaClientes;
+        private datosClientes datosClientes;
 
-        public FormularioNuevoCliente()
+        public FormularioNuevoCliente(LogicaClientes logica, datosClientes parentForm)
         {
             InitializeComponent();
-            logicaClientes = new LogicaClientes();
+            this.logicaClientes = logica; // Usar la misma instancia
+            this.datosClientes = parentForm;
         }
 
         private void FNC_Agregar_Click(object sender, EventArgs e)
@@ -49,6 +51,9 @@ namespace PruebaForms.Interfaz
 
                 // Show success message
                 MessageBox.Show("Cliente agregado exitosamente.");
+
+                //Actualizar tabla
+                datosClientes.CargarClientes();
 
                 // Close the form
                 this.DialogResult = DialogResult.OK;
