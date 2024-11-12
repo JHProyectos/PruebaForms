@@ -10,7 +10,7 @@ using System.Xml.Linq;
 
 namespace PruebaForms.Lógica
 {
-    internal class LogicaClientes
+    public class LogicaClientes
     {
             private List<Clientes> clientes;
             private readonly string archivoXml = @"D:\Documentos\Jonatan\Facultad\Sistemas\2do_Año\Paradigmas\POO\PruebaForms\PruebaForms\Repositorio\datosClientes.xml";
@@ -81,7 +81,6 @@ namespace PruebaForms.Lógica
             }
 
           
-
 
         // Obtener un resumen de cuenta del cliente (puedes personalizar este método)
         public string ObtenerResumenCuenta(Clientes cliente)
