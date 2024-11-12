@@ -33,13 +33,13 @@ namespace PruebaForms.Interfaz
         }
 
         // Evento Load: cargar los datos cuando el formulario se abre
-        private void datosClientes_Load(object sender, EventArgs e)
+        public void datosClientes_Load(object sender, EventArgs e)
         {
             CargarClientes();
         }
 
         // Método para cargar los clientes en el DataGridView
-        private void CargarClientes()
+        public void CargarClientes()
         {
             dgvClientes.DataSource = null; // Limpiar el DataGridView antes de cargar
             dgvClientes.DataSource = logicaClientes.ObtenerClientes(); // Cargar los datos de los clientes
@@ -56,9 +56,10 @@ namespace PruebaForms.Interfaz
         private void Nuevo_Cliente_Click(object sender, EventArgs e)
         {
             // Abre un formulario para ingresar los datos de un nuevo cliente
-            var formularioNuevoCliente = new FormularioNuevoCliente();
+            var formularioNuevoCliente = new FormularioNuevoCliente(logicaClientes, this);
             if (formularioNuevoCliente.ShowDialog() == DialogResult.OK)
-            { 
+            {
+                logicaClientes.CargarClientes();
             }
            
 
