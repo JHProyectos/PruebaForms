@@ -13,8 +13,7 @@ namespace PruebaForms.Lógica
     public class LogicaClientes
     {
             private List<Clientes> clientes;
-            private readonly string archivoXml = @"D:\Documentos\Jonatan\Facultad\Sistemas\2do_Año\Paradigmas\POO\PruebaForms\PruebaForms\Repositorio\datosClientes.xml";
-
+            private readonly string archivoXml = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Repositorio", "datosClientes.xml");
 
         public LogicaClientes()
             {
@@ -37,11 +36,21 @@ namespace PruebaForms.Lógica
         // Método para guardar la lista de clientes en el archivo XML
         public void GuardarClientes(List<Clientes> clientes)
             {
+                try
+            {
+                //eso asegura que el directorio existe
+                Directory.CreateDirectory(Path.GetDirectoryName(archivoXml));
+
                 XmlSerializer serializer = new XmlSerializer(typeof(List<Clientes>));
                 using (StreamWriter writer = new StreamWriter(archivoXml))
                 {
                     serializer.Serialize(writer, clientes);
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al guardar clientes: {ex.Message}");
+            }
             }
 
             public List<Clientes> CargarClientes()
