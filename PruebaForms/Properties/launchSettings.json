@@ -2,7 +2,7 @@
   "profiles": {
     "PruebaForms": {
       "commandName": "Project",
-      "workingDirectory": "D:\\Documentos\\Jonatan\\Facultad\\Sistemas\\2do_Año\\Paradigmas\\POO"
+       "workingDirectory": "$(ProjectDir)\\bin\\$(Configuration)\\net8.0-windows"
     }
   }
 }
