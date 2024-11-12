@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Xml.Linq;
+using PruebaForms.Entidades;
 
-namespace PruebaForms.Entidades
+namespace PruebaForms.Lógica
 {
     internal class Logica_Bancos
     {
@@ -15,51 +16,77 @@ namespace PruebaForms.Entidades
             public LogicaBanco()
             {
                 cuentasBancarias = new List<Bancos>();
+                CargarCuentasBancarias();
             }
 
-            // Método para agregar una cuenta bancaria
+            private void CargarCuentasBancarias()
+            {
+                // Load data from datosClientes.xml
+                string archivoClientesXml = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datosClientes.xml");
+                if (File.Exists(archivoClientesXml))
+                {
+                    XDocument docClientes = XDocument.Load(archivoClientesXml);
+                    cuentasBancarias.AddRange(
+                        docClientes.Descendants("Clientes")
+                            .Select(c => new Bancos(
+                                c.Element("CuentaBancariaID").Value,
+                                $"{c.Element("Nombre").Value} {c.Element("Apellido").Value}",
+                                decimal.Parse(c.Element("Saldo").Value),
+                                "Cliente"
+                            ))
+                    );
+                }
+
+                // Load data from datosProveedores.xml
+                string archivoProveedoresXml = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datosProveedores.xml");
+                if (File.Exists(archivoProveedoresXml))
+                {
+                    XDocument docProveedores = XDocument.Load(archivoProveedoresXml);
+                    cuentasBancarias.AddRange(
+                        docProveedores.Descendants("Proveedores")
+                            .Select(c => new Bancos(
+                                c.Element("CuentaBancariaID").Value,
+                                $"{c.Element("Nombre").Value} {c.Element("Apellido").Value}",
+                                decimal.Parse(c.Element("Saldo").Value),
+                                "Proveedor"
+                            ))
+                    );
+                }
+            }
+
             public void AgregarCuenta(Bancos cuenta)
             {
                 cuentasBancarias.Add(cuenta);
             }
 
-            // Método para verificar si un cliente tiene fondos suficientes
-            public bool VerificarFondos(int idCuenta, decimal monto)
+            public bool VerificarFondos(string cuentaBancariaID, decimal monto)
             {
-                var cuenta = cuentasBancarias.FirstOrDefault(c => c.Id == idCuenta);
-                if (cuenta != null)
-                {
-                    return cuenta.Saldo >= monto;
-                }
-                return false;
+                var cuenta = cuentasBancarias.FirstOrDefault(c => c.CuentaBancariaID == cuentaBancariaID);
+                return cuenta != null && cuenta.Saldo >= monto;
             }
 
-            // Método para realizar una compra
-            public bool RealizarCompra(int idCuentaCliente, decimal montoCompra)
+            public bool RealizarCompra(string cuentaBancariaID, decimal montoCompra)
             {
-                var cuentaCliente = cuentasBancarias.FirstOrDefault(c => c.Id == idCuentaCliente);
+                var cuentaCliente = cuentasBancarias.FirstOrDefault(c => c.CuentaBancariaID == cuentaBancariaID);
                 if (cuentaCliente != null && cuentaCliente.Extraer(montoCompra))
                 {
-                    return true; // Compra exitosa
+                    return true; // Successful purchase
                 }
-                return false; // Fondos insuficientes
+                return false; // Insufficient funds
             }
 
-            // Método para transferir dinero entre cuentas (por ejemplo, empresa a proveedor)
-            public bool TransferirFondos(int idCuentaOrigen, int idCuentaDestino, decimal monto)
+            public bool TransferirFondos(string cuentaOrigenID, string cuentaDestinoID, decimal monto)
             {
-                var cuentaOrigen = cuentasBancarias.FirstOrDefault(c => c.Id == idCuentaOrigen);
-                var cuentaDestino = cuentasBancarias.FirstOrDefault(c => c.Id == idCuentaDestino);
+                var cuentaOrigen = cuentasBancarias.FirstOrDefault(c => c.CuentaBancariaID == cuentaOrigenID);
+                var cuentaDestino = cuentasBancarias.FirstOrDefault(c => c.CuentaBancariaID == cuentaDestinoID);
 
                 if (cuentaOrigen != null && cuentaDestino != null && cuentaOrigen.Extraer(monto))
                 {
                     cuentaDestino.Depositar(monto);
                     return true;
                 }
-                return false; // Transferencia fallida
+                return false; // Transfer failed
             }
         }
     }
 }
-
-
